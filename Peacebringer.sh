@@ -65,18 +65,22 @@ dbBackup() {
     # Print out that we are initializing the backup, and tell the user where it will be located.
 
     printf      $'\n\t'"The DB backup will be stored in /tmp/. Please wait..."
-    sleep 2.5
+    sleep 1.5
 
     # Use the information we've gathered earlier, and CD into the specific user directory that this is being ran inside of. If we did this in /tmp/, we'd have to make a folder there and constantly check for it.
     # Instead, we're just storing it in their /Documents/ folder, as that is >typically< created upon user account creation.
     # We finalzie this process by tagging the Year, Month, and Day of DB creation so we can select which one to recover from later.
 
-    cd /tmp/ && mysqldump --user=userName --password=passWord --lock-tables --all-databases > $(date '+%Y-%m-%d').sql
+    cd /tmp/ && mysqldump --user=$userName --password=$passWord --lock-tables --all-databases > $(date '+%Y-%m-%d').sql
 
     # Clear the screen upon completion, and tell the user that it has finished successfully.
 
     clear
     printf      $'\n\t'"The DB was successfully backed up into /tmp/, exiting..."
+
+    echo
+    echo
+
     sleep 2.5
 
     exit
@@ -89,6 +93,7 @@ dbRestore() {
 
     echo "Scanning the /tmp/ directory for any databases..."
     echo
+
     sleep 1
 
     # Get a list of files in /tmp/ directory.
@@ -100,13 +105,17 @@ dbRestore() {
     index=1
 
     for file in $file_list; do
+
         echo "$index: $file"
+
         index=$((index + 1))
+
     done
 
     # Prompt user to select a file.
 
     echo -n "Select a file (enter a number): "
+
     read file_number
 
     # Store users selection into a variable.
@@ -121,7 +130,7 @@ dbRestore() {
 
     # Iterate with the information we were given, restore the DB forcefully.
 
-    clear && sudo mysql --user userName --password --force < outputFile
+    clear && sudo mysql --user $userName --password --force < outputFile
 
     # Clear the terminal and tell the user that it passed, and will exit.
 
@@ -192,6 +201,7 @@ webRestore() {
 
     echo "Scanning the /tmp/ directory for any databases..."
     echo
+
     sleep 1
 
     # Get a list of files in /tmp/ directory.
@@ -203,13 +213,17 @@ webRestore() {
     index=1
 
     for file in $file_list; do
+
         echo "$index: $file"
+
         index=$((index + 1))
+
     done
 
     # Prompt user to select a file.
 
     echo -n "Select a file (enter a number): "
+
     read file_number
 
     # Store users selection into a variable.
@@ -222,18 +236,21 @@ webRestore() {
 
     printf $'\n\t'"Disabling services momentarily..."
     echo
+
     sleep 1.25
 
     sudo systemctl stop nginx postfix mariadb memcached.service
 
     printf $'\n\t'"Services have successfully been disabled. Attempting restoration, please wait..."
     echo
+
     sleep 1.25
 
     # Here we're beginning to decompress the file we created, and moved, earlier. This contains everything we need to properly setup the new server.
 
     printf $'\n\t'"Attempting to decompress the file, please wait..."
     echo
+
     sleep 2
 
     cd /tmp/ && sudo tar -xz outputFile
@@ -241,6 +258,7 @@ webRestore() {
 
     printf $'\n\t'"The file has successfully been decompressed! Attempting restore..."
     echo
+
     sleep 1.25
 
     # Here we're going to move the files to the proper directory that they came from.
@@ -267,12 +285,14 @@ webRestore() {
 
     printf $'\n\t'"API keys have successfully been restored! Attempting SSL certs restore..."
     echo
+
     sleep 1.25
 
     cd /tmp/tmp/Backup/etc/ && sudo cp -r letsencrypt/ /etc/
 
     printf $'\n\t'"SSL certs have successfully been restored!"
     echo
+    
     sleep 1.25
 
     # Now we'll start the services again, and enable them to persist on reboot
