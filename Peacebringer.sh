@@ -292,7 +292,7 @@ webRestore() {
 
     printf $'\n\t'"SSL certs have successfully been restored!"
     echo
-    
+
     sleep 1.25
 
     # Now we'll start the services again, and enable them to persist on reboot
@@ -300,7 +300,7 @@ webRestore() {
     printf $'\n\t'"Starting services, and enabling them for future reboots, please wait..."
     echo
 
-    sudo systemctl sart nginx postfix mariadb memcached.service && sudo systemctl enable nginx postfix mariadb memcached.service
+    sudo systemctl start nginx postfix mariadb memcached.service && sudo systemctl enable nginx postfix mariadb memcached.service
 
     # Clearing the shell and telling the user that the process is complete.
 
