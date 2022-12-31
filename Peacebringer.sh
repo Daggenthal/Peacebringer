@@ -314,7 +314,119 @@ webRestore() {
 }
 
 transferBackup() {
+    
+    clear
+
+    read -p     $'\n\t'"Please input the target Username: " userName
+    read -p     $'\n\t'"Please input the target IP Address: " ipAddress
     echo
+
+    clear
+
+    printf      $'\n\t'"Entered information: "
+    echo
+    printf      $'\n\t'"Username: " $userName
+    printf      $'\n\t'"IP Address: " $ipAddress
+    echo
+    
+    printf      $'\n\t'"Are those correct?"
+    echo
+
+    echo        "1: Yes"
+    echo        "2: No"
+
+    read -p     $'\n\t'"Response: " userChoice
+
+
+    if  [ $userChoice = '1' ]; then
+        
+        clear
+
+        scanDirectory() {
+
+        printf $'\n\t'"Scanning /tmp/ for .tar.gz files..."
+        echo
+        sleep 1.25
+
+        # Get a list of files in /tmp/ directory.
+
+        file_list=$(ls /tmp/ | grep '.tar.gz' )
+
+        # Print out each file in the directory with a number.
+
+        index=1
+
+        for file in $file_list; do
+
+            echo "$index: $file"
+
+            index=$((index + 1))
+
+        done
+
+        # Prompt user to select a file.
+
+        echo -n "Select a file (enter a number): "
+
+        read file_number
+
+        # Store users selection into a variable.
+
+        outputFile=$(echo "$file_list" | head -n$file_number | tail -1)
+
+        clear
+
+        printf      $'\n\t'"Selected file: " $outputFile
+        echo
+
+        printf      $'\n\t'"Is this the one you wanted to transfer?"
+        echo
+
+        echo        "1: Yes"
+        echo        "2: No"
+
+        read -p     $'\n\t'"Response: " userChoice
+
+        if  [ $userChoice = '1' ]; then
+
+            if [ $outputFile -lt $i ] && [ $outputFile -gt 0 ]; then
+
+                # Now we're going to RSYNC our selected file to the destination that we've chosen earlier.
+
+                cd /tmp/ && sudo rsync -av -P outputFile userName + '@' + ipAddress + ':/tmp/'
+                echo
+
+                printf  $'\n\t'"RSYNC was successful! Exiting program now..."
+                sleep 1.25
+                exit
+
+            else
+
+                # Have the user return back and select a valid option.
+
+                echo "Invalid selection, please try again..."
+                scanDirectory
+
+            }
+        
+        elif    [ $userChoice = '2' ]; then
+
+            clear
+            printf  $'\n\t'"Returning back to selection..."
+            sleep 1.25
+            scanDirectory
+        
+        fi
+
+    elif    [ $userChoice = '2' ]; then
+
+        clear
+        echo    "Returning back to the beginning, please wait..."
+        sleep 1.25
+
+        transferBackup
+    fi
+
 }
 
 serverSetup() {
