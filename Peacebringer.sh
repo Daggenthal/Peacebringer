@@ -1,5 +1,23 @@
 #!/bin/bash
 
+Help()
+{
+   
+    # Display Help
+    echo
+    echo     $'\t'"h    --      Prints this message."
+    echo     $'\t'"fb   --      Backs up the server."
+    echo     $'\t'"dbb  --      Backs up the database and timestamps it."
+    echo     $'\t'"wb   --      Backs up NGINX, Certs, and other important files such as the website"
+    echo     $'\n\t'"tb   --      Transfers to a new server."
+    echo     $'\t'"s    --      Installs the necessarry files for the server."
+    echo     $'\n\t'"fr   --      This restores the server, putting the files we've backed up into their proper directories."
+    echo     $'\n\t'"dbr  --      This allows the user to select a specific .sql database and recover into it."
+    echo     $'\n\t'"wbr  --      This attempts to restore the NGINX and webBackup that a user selects in the /tmp/ directory."
+    echo
+
+}
+
 mainMenu() {
 
     clear
@@ -16,7 +34,7 @@ mainMenu() {
     printf      "\n\t8: Restore Website\n"
     printf      "\n\t9: Exit\n\t"
 
-    read -p $'\n\t'"Please input your choice: " userChoice
+    read -p     $'\n\t'"Please input your choice: " userChoice
 
     if      [ $userChoice = '1' ]; then
         fullBackup
@@ -27,9 +45,9 @@ mainMenu() {
     elif    [ $userChoice = '4' ]; then
         transferBackup
     elif    [ $userChoice = '5' ]; then
-        echo "Test 3"
+        serverSetup
     elif    [ $userChoice = '6' ]; then
-        echo "Test 3"
+        fullRestore
     elif    [ $userChoice = '7' ]; then
         dbRestore
     elif    [ $userChoice = '8' ]; then
@@ -38,9 +56,6 @@ mainMenu() {
         clear && exit
     fi
 }
-
-
-
 
 ############################ FUNCTIONS ############################ 
 
@@ -79,7 +94,7 @@ fullBackup() {
     # Instead, we're just storing it in their /Documents/ folder, as that is >typically< created upon user account creation.
     # We finalzie this process by tagging the Year, Month, and Day of DB creation so we can select which one to recover from later.
 
-    cd /tmp/Backup && mysqldump --user=userName --password=passWord --lock-tables --all-databases > $(date '+%Y-%m-%d').sql
+    cd /tmp/Backup && mysqldump --user=userName --password=passWord --lock-tables --all-databases > server_db_backup.sql
 
     # Clear the screen upon completion, and tell the user that it has finished successfully.
 
@@ -386,14 +401,13 @@ transferBackup() {
 
     echo        $'\n\t'"Are these correct?"
     echo        $'\n\t'"Username: " $userName
-    echo        $'\n\t'"IP Address: "   $ipAddress
-    echo
+    echo        $'\t'"IP Address: "   $ipAddress
 
     echo        $'\n\t'"1) Yes"
-    echo        $'\n\t'"2)  No"
+    echo        $'\t'"2) No"
     echo
 
-    read -p     $'\n\t'"Answer: "   userChoice
+    read -p     $'\t'"Answer: "   userChoice
 
 
     if [ $userChoice = '1' ]; then
@@ -457,14 +471,236 @@ transferBackup() {
 }
 
 serverSetup() {
-    echo
+    
+    clear
+
+    printf      $'\n\t'"Detecting Distribution and installing prerequisite software..."
+    sleep 1.25
+
+    #   Detect Linux Distro.
+
+    OS = cat /etc/os-release
+
+    #   Install software based upon distro.
+
+    if [ $OS = 'debian|ubuntu' ]; then
+
+        sudo apt install nginx mariadb-server memcached certbot postfix pv php-cli php-mysqli php-xml php-fpm memcached python3-certbot-nginx vsftpd
+
+    elif [ $OS = 'fedora' ]; then
+        
+        sudo dnf install nginx mariadb-server memcached certbot postfix pv php-cli php-mysqli php-xml php-fpm php-pecl-memcached python3-certbot-nginx vsftpd
+
+    elif [ $OS = 'rocky' ]; then
+
+        sudo dnf install -y epel-release && sudo dnf install nginx mariadb-server memcached certbot postfix pv php-cli php-mysqli php-xml php-fpm php-pecl-memcached python3-certbot-nginx vsftpd
+
+    elif [ $OS = 'arch' ]; then
+
+        sudo pacman -S nginx mariadb-server memcached certbot postfix pv php-cli php-mysqli php-xml php-fpm memcached python3-certbot-nginx vsftpd
+
+    elif [ $OS = 'opensuse' ]; then
+
+        sudo zypper install nginx mariadb-server memcached certbot postfix pv php-cli php-mysqli php-xml php-fpm memcached python3-certbot-nginx vsftpd
+
+    elif [ $OS = 'freebsd' ]; then
+
+        sudo pkg install nginx mariadb106-server-10.6.8 mariadb106-client-10.6.8  memcached postfix py38-certbot-nginx-1.22.0 apache24-2.4.54
+    
+    fi
+    
+    clear
+
+    echo        $'\n\t'"The prerequisites have been installed! Exiting now..."
+    sleep 1.25
+
+    clear
+
+    exit
+
 }
 
 fullRestore() {
+    
+    clear
+
+    printf      $'\n\t'"Disabling services momentarily..."
+    sleep 1.25
+
+    sudo systemctl stop nginx postfix mariadb memcached.service
+
+    printf      $'\n\t'"Services have been disabled. Attempting restoration, please wait..."
+    sleep 1.25
+
+    clear
+
+    echo        "Scanning the /tmp/ directory for any databases..."
     echo
+
+    sleep 1
+
+    # Get a list of files in /tmp/ directory.
+
+    file_list=$(ls /tmp/ | grep '.tar.gz' )
+
+    # Print out each file in the directory with a number.
+
+    index=1
+
+    for file in $file_list; do
+        echo "$index: $file"
+        index=$((index + 1))
+    done
+
+    # Prompt user to select a file.
+
+    echo -n     $'\n\t'"Select a file (enter a number): "
+    read file_number
+
+    # Store users selection into a variable.
+
+    outputFile=$(echo "$file_list" | head -n$file_number | tail -1)
+
+    clear
+
+	# Here we're beginning to decompress the file we created, and moved, earlier. This contains everything we need to properly setup the new server.
+
+    printf      $'\n\t'"Attempting to decompress the file, please wait..."
+    sleep 2
+
+    # Decompress the selected file.
+
+    cd /tmp/ && sudo pv outputFile | tar -xz
+
+    clear
+
+    printf      $'\n\t'"Decompression successful, attempting restore..."
+
+    #   Copy the files back into their proper directories.
+
+    cd /tmp/tmp/Backup/etc && sudo cp -r my.cnf php.ini nginx/ postfix/ /etc/
+
+    clear
+
+    printf      $'\n\t'"/etc/ has been successfully restored! Attempting website restore..."
+
+    sudo postmap /etc/postfix/sasl_passwd
+
+    printf      $'\n\t'"API keys have been restored! Attempting SSL certs restore..."
+
+    cd /tmp/tmp/Backup/etc && sudo cp -r letsencrypt/ /etc/
+
+    printf      $'\n\t'"SSL certs have been successfully restored!"
+
+    #   Enable the services for future reboots and start them
+
+    printf      $'\n\t'"Starting services and enabling them for future reboots, please wait..."
+
+    sudo systemctl start nginx postfix mariadb memcached.service && sudo systemctl enable nginx postfix mariadb memcached.service
+
+    printf      $'\n\t'"Services have been successfully enabled! Configuring the database..."
+    sleep 1.25
+
+    clear
+
+    echo        $'\n\t'"Have you already setup MariaDB?"
+    echo
+    echo        $'\n\t'"1) Yes"
+    echo        $'\t'"2) No"
+
+    read -p     $'\n\t'"Please input your selection: " userChoice
+
+    if [ $userChoice = '1' ]; then
+        
+        echo    $'\n\t'"Please input your MariaDB username: "
+        read -p $'\n\t'"Response: " userName
+        echo
+
+        echo    $'\n\t'"Attempting mariaDB / mySQL Database restoration, please wait..."
+
+        sudo mysql --user userName --password --force < /tmp/tmp/Backup/server_db_backup.sql
+
+        echo    $'\n\t'"Database restoration successful! Exiting now..."
+        sleep 1.25
+        exit
+
+    elif [ $userChoice = '1' ]; then
+
+        echo    $'\n\t'"Would you like to go ahead and setup MariaDB?"
+        echo    $'\n\t'"1) Yes"
+        echo    $'\n\t'"2) No"
+
+        read -p $'Please input your selection: ' userChoice
+    
+    fi
+
+        if [ $userChoice = '1']; then
+            
+            #   Initiate the mariaDB setup wizard
+
+            sudo mysql_secure_installation
+            clear
+
+            echo    $'\n\t'"Please input your MariaDB username: "
+            read -p $'\n\t'"Response: " userName
+            echo
+
+            echo    $'\n\t'"Attempting mariaDB / mySQL Database restoration, please wait..."
+
+            sudo mysql --user userName --password --force < /tmp/tmp/Backup/server_db_backup.sql
+
+            echo    $'\n\t'"Database restoration successful! Exiting now..."
+            sleep 1.25
+            exit
+
+        elif [ $userChoice = '2' ]; then
+
+            clear
+
+            printf  $'\n\t'"Please note, that you may need to manually set it up for MariaDB to work properly."
+            printf  $'\n\t'"Restoration complete! Going back to main menu..."
+
+            sleep 2
+            break
+        
+        fi
 }
 
-
 ############################ FUNCTIONS ############################
+
+# Get the options
+while getopts ":h" option; do
+    case $option in
+
+        h) # display Help
+            Help
+            exit;;
+        fb)
+            fullBackup
+            exit;;
+        dbb)
+            dbBackup
+            exit;;
+        wb)
+            webBackup
+            exit;;
+        tb)
+            transferBackup
+            exit;;
+        s)
+            serverSetup
+            exit;;
+        fr)
+            fullRestore
+            exit;;
+        dbr)
+            dbRestore
+            exit;;
+        wbr)
+            webRestore
+            exit;;
+
+    esac
+done
 
 mainMenu
