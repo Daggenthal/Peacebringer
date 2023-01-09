@@ -138,6 +138,8 @@ fullBackup() {
 
     printf      $'\n\t'"Exiting program..."
     sleep 1.5
+    clear
+    
     exit
 
 }
@@ -172,6 +174,7 @@ dbBackup() {
     clear
     printf      $'\n\t'"The DB was successfully backed up into /tmp/, exiting..."
     sleep 2.5
+    clear
 
     exit
 
@@ -222,6 +225,7 @@ dbRestore() {
     clear
     printf      $'\n\t'"The Database was properly restored! Exiting now..."
     sleep 1.5
+    clear
 
     exit
 
@@ -278,6 +282,7 @@ webBackup() {
 
     printf      $'\n\t'"Exiting program..."
     sleep 1.5
+    clear
     exit
 
 }
@@ -450,6 +455,7 @@ transferBackup() {
 
         echo        $'\n\t'"File has been successfully transferred, exiting now..."
         sleep 1.5
+        clear
         exit
 
 
@@ -656,6 +662,7 @@ fullRestore() {
 
             echo    $'\n\t'"Database restoration successful! Exiting now..."
             sleep 1.25
+            clear
             exit
 
         elif [ $userChoice = '2' ]; then
