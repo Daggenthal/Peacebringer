@@ -1,7 +1,6 @@
 #!/bin/bash
 
-Help()
-{
+Help()  {
    
     # Display Help
     echo
@@ -479,33 +478,39 @@ serverSetup() {
 
     #   Detect Linux Distro.
 
-    OS = cat /etc/os-release
+    OS=$(cat /etc/os-release)
 
     #   Install software based upon distro.
 
-    if [ $OS = 'debian|ubuntu' ]; then
-
-        sudo apt install nginx mariadb-server memcached certbot postfix pv php-cli php-mysqli php-xml php-fpm memcached python3-certbot-nginx vsftpd
-
-    elif [ $OS = 'fedora' ]; then
+    if grep -Eq 'debian|ubuntu' /etc/os-release; then
         
-        sudo dnf install nginx mariadb-server memcached certbot postfix pv php-cli php-mysqli php-xml php-fpm php-pecl-memcached python3-certbot-nginx vsftpd
+        clear
+        sudo apt install -y nginx mariadb-server memcached certbot postfix pv php-cli php-mysqli php-xml php-fpm memcached python3-certbot-nginx vsftpd
 
-    elif [ $OS = 'rocky' ]; then
+    elif  grep -Eq 'fedora' /etc/os-release; then
+        
+        clear
+        sudo dnf install -y nginx mariadb-server memcached certbot postfix pv php-cli php-mysqli php-xml php-fpm php-pecl-memcached python3-certbot-nginx vsftpd
 
+    elif grep -Eq 'rocky' /etc/os-release; then
+
+        clear
         sudo dnf install -y epel-release && sudo dnf install nginx mariadb-server memcached certbot postfix pv php-cli php-mysqli php-xml php-fpm php-pecl-memcached python3-certbot-nginx vsftpd
 
-    elif [ $OS = 'arch' ]; then
+    elif grep -Eq 'arch' /etc/os-release; then
 
+        clear
         sudo pacman -S nginx mariadb-server memcached certbot postfix pv php-cli php-mysqli php-xml php-fpm memcached python3-certbot-nginx vsftpd
 
-    elif [ $OS = 'opensuse' ]; then
+    elif grep -Eq 'opensuse' /etc/os-release; then
 
-        sudo zypper install nginx mariadb-server memcached certbot postfix pv php-cli php-mysqli php-xml php-fpm memcached python3-certbot-nginx vsftpd
+        clear
+        sudo zypper install -y nginx mariadb-server memcached certbot postfix pv php-cli php-mysqli php-xml php-fpm memcached python3-certbot-nginx vsftpd
 
-    elif [ $OS = 'freebsd' ]; then
+    elif grep -Eq 'freebsd' /etc/os-release; then
 
-        sudo pkg install nginx mariadb106-server-10.6.8 mariadb106-client-10.6.8  memcached postfix py38-certbot-nginx-1.22.0 apache24-2.4.54
+        clear
+        sudo pkg install -y nginx mariadb106-server-10.6.8 mariadb106-client-10.6.8  memcached postfix py38-certbot-nginx-1.22.0 apache24-2.4.54
     
     fi
     
