@@ -56,7 +56,7 @@ mainMenu() {
     fi
 }
 
-############################ FUNCTIONS ############################ 
+############################ FUNCTIONS ############################
 
 fullBackup() {
     
@@ -103,7 +103,7 @@ fullBackup() {
 
     # Starts the backup process of my.cnf, NGINX, apache(HTTPD), and postfix for the mail system / SendGrid settings, then moves them in the tmp directory.
 
-    cp /etc/my.cnf /tmp/Backup/etc/ && cp /etc/php.ini /tmp/Backup/etc 
+    cp /etc/my.cnf /tmp/Backup/etc/ && cp /etc/php.ini /tmp/Backup/etc
 
     sudo cp -r /etc/nginx/ /tmp/Backup/etc/ && sudo cp -r /etc/postfix/ /tmp/Backup/etc
 
@@ -250,7 +250,7 @@ webBackup() {
     echo		$'\n\t'"Web backup initiated... please wait"
     sleep 1.25
 
-    cp /etc/my.cnf /tmp/Backup/etc/ && cp /etc/php.ini /tmp/Backup/etc 
+    cp /etc/my.cnf /tmp/Backup/etc/ && cp /etc/php.ini /tmp/Backup/etc
 
     sudo cp -r /etc/nginx/ /tmp/Backup/etc/ && sudo cp -r /etc/postfix/ /tmp/Backup/etc
 
