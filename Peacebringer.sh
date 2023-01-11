@@ -680,39 +680,45 @@ fullRestore() {
 
 ############################ FUNCTIONS ############################
 
-# Get the options
-while getopts ":h" option; do
-    case $option in
 
-        h) # display Help
-            Help
-            exit;;
-        fb)
-            fullBackup
-            exit;;
-        dbb)
-            dbBackup
-            exit;;
-        wb)
-            webBackup
-            exit;;
-        tb)
-            transferBackup
-            exit;;
-        s)
-            serverSetup
-            exit;;
-        fr)
-            fullRestore
-            exit;;
-        dbr)
-            dbRestore
-            exit;;
-        wbr)
-            webRestore
-            exit;;
+while [ -n "$0" ]; do
 
-    esac
+	case "$1" in
+	
+		-h)		Help
+				exit;;
+				
+		-fb)	fullBackup
+				exit;;
+				
+		-dbb)	dbBackup
+				exit;;
+				
+		-dbr)	dbRestore
+				exit;;
+				
+		-wb)	webBackup
+				exit;;
+				
+		-wbr)	webRestore
+				exit;;
+				
+		-tb)	transferBackup
+				exit;;
+				
+		-s)		serverSetup
+				exit;;
+				
+		-fr)	fullRestore
+				exit;;
+		
+	esac
+	shift
+	
 done
+
+
+
+
 
 mainMenu
