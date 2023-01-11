@@ -722,6 +722,6 @@ while [ -n "$0" ]; do
 	
 done
 
-#	Executes the main menu after everything has been set-and-done
+#	Executes the main menu after everything has been set-and-done
 
 mainMenu
