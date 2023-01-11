@@ -681,6 +681,8 @@ fullRestore() {
 ############################ FUNCTIONS ############################
 
 
+#	This here allows us to pass Command Line Options so we can skip the main menu itself
+
 while [ -n "$0" ]; do
 
 	case "$1" in
@@ -717,8 +719,6 @@ while [ -n "$0" ]; do
 	
 done
 
-
-
-
+#	Executes the main menu after everything has been set-and-done
 
 mainMenu
