@@ -246,6 +246,9 @@ webBackup() {
     mkdir /tmp/Backup/ && mkdir /tmp/Backup/etc/ && mkdir /tmp/Backup/usr/
 
     # Starts the backup process of my.cnf, NGINX, apache(HTTPD), and postfix for the mail system / SendGrid settings, then moves them in the tmp directory.
+    
+    echo		$'\n\t'"Web backup initiated... please wait"
+    sleep 1.25
 
     cp /etc/my.cnf /tmp/Backup/etc/ && cp /etc/php.ini /tmp/Backup/etc 
 
