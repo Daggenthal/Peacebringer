@@ -652,7 +652,7 @@ fullRestore() {
             
             #   Initiate the mariaDB setup wizard
 
-            sudo mysql_secure_installation
+            sudo mariadb-secure-installation # Changed from mysql-secure-installation
             clear
 
             echo    $'\n\t'"Please input your MariaDB username: "
