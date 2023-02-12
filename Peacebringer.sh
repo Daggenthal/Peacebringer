@@ -349,13 +349,13 @@ webRestore() {
 
     # Here we're going to move the files to the proper directory that they came from.
 
-    cd /tmp/tmp/Backup/etc && rsync -avr * localhost:/etc/ 
+    cd /tmp/tmp/Backup/etc && sudo rsync -avr * /etc/ 
 
     printf      $'\n\t'"/etc/ folders have successfully been restored! Attempting website restore..."
     echo
     sleep 1.25
 
-    cd /tmp/tmp/Backup/usr && rsync -avr nginx/ localhost:/usr/share/
+    cd /tmp/tmp/Backup/usr && sudo rsync -avr nginx/ /usr/share/
 
     printf      '\n\t'"Website has successfully been restored! Attempting API key restore..."
     echo
@@ -582,7 +582,7 @@ fullRestore() {
 
     #   Copy the files back into their proper directories.
 
-    cd /tmp/tmp/Backup/etc && rsync -avr * localhost:/etc/ 
+    cd /tmp/tmp/Backup/etc && sudo rsync -avr * /etc/ 
 
     clear
 
