@@ -349,17 +349,13 @@ webRestore() {
 
     # Here we're going to move the files to the proper directory that they came from.
 
-    cd /tmp/tmp/Backup/etc && sudo cp my.cnf /etc/ && sudo cp php.ini /etc/ && sudo cp -r nginx/ /etc/ && sudo cp -r postfix/ /etc/
+    cd /tmp/tmp/Backup/etc && rsync -avr * localhost:/etc/ 
 
     printf      $'\n\t'"/etc/ folders have successfully been restored! Attempting website restore..."
     echo
     sleep 1.25
 
-    # Now we're going to move the website and mail certs back to their origin.
-    # We move the folder that's created by nginx, to the /tmp/ directory, so we can install our own copy.
-
-    cd /usr/share && sudo mv nginx/ /tmp/
-    cd /tmp/tmp/Backup/usr && sudo cp -r nginx/ /usr/share/
+    cd /tmp/tmp/Backup/usr && rsync -avr nginx/ localhost:/usr/share/
 
     printf      '\n\t'"Website has successfully been restored! Attempting API key restore..."
     echo
@@ -368,12 +364,6 @@ webRestore() {
     # Now we're going to setup postfix so we can use the same API keys
 
     sudo postmap /etc/postfix/sasl_passwd
-
-    printf      $'\n\t'"API keys have successfully been restored! Attempting SSL certs restore..."
-    echo
-    sleep 1.25
-
-    cd /tmp/tmp/Backup/etc/ && sudo cp -r letsencrypt/ /etc/
 
     printf      $'\n\t'"SSL certs have successfully been restored!"
     echo
@@ -592,19 +582,13 @@ fullRestore() {
 
     #   Copy the files back into their proper directories.
 
-    cd /tmp/tmp/Backup/etc && sudo cp -r my.cnf php.ini nginx/ postfix/ /etc/
+    cd /tmp/tmp/Backup/etc && rsync -avr * localhost:/etc/ 
 
     clear
 
     printf      $'\n\t'"/etc/ has been successfully restored! Attempting website restore..."
 
     sudo postmap /etc/postfix/sasl_passwd
-
-    printf      $'\n\t'"API keys have been restored! Attempting SSL certs restore..."
-
-    cd /tmp/tmp/Backup/etc && sudo cp -r letsencrypt/ /etc/
-
-    printf      $'\n\t'"SSL certs have been successfully restored!"
 
     #   Enable the services for future reboots and start them
 
@@ -652,7 +636,7 @@ fullRestore() {
             
             #   Initiate the mariaDB setup wizard
 
-            sudo mariadb-secure-installation # Changed from mysql-secure-installation
+            sudo mariadb-secure-installation # Changed from mysql_secure_installation
             clear
 
             echo    $'\n\t'"Please input your MariaDB username: "
