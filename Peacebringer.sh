@@ -123,7 +123,7 @@ fullBackup() {
 
     # Dates and compresses the /tmp/Backup/ folder for RSYNC later on, then removes the temporary /tmp/Backup/ folder.
 
-    cd /tmp/ && sudo tar -zcvf "$(date '+%Y-%m-%d')_webBackup.tar.gz" /tmp/Backup/
+    cd /tmp/ && sudo tar -zcvf "$(date '+%Y-%m-%d')_fullBackup.tar.gz" /tmp/Backup/
 
     # Moves the folder we've created to the /tmp/ directory to be cleared whenever the server is rebooted, or when /tmp/ is usually cleared.
 
@@ -413,7 +413,7 @@ transferBackup() {
 
         # Get a list of files in /tmp/ directory.
 
-        file_list=$(ls /tmp/ | grep -E '.sql|.tar.gz|_webBackup.tar.gz|.log|_link')
+        file_list=$(ls /tmp/ | grep -E '.sql|.tar.gz|_webBackup.tar.gz|_fullBackup.tar.gz|.log|_link')
 
         # Print out each file in the directory with a number.
 
