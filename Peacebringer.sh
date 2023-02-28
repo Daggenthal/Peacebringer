@@ -93,7 +93,7 @@ fullBackup() {
     # Instead, we're just storing it in their /Documents/ folder, as that is >typically< created upon user account creation.
     # We finalzie this process by tagging the Year, Month, and Day of DB creation so we can select which one to recover from later.
 
-    cd /tmp/Backup && mysqldump --user=userName --password=passWord --lock-tables --all-databases > server_db_backup.sql
+    cd /tmp/Backup && sudo mysqldump --user=userName --password=passWord --lock-tables --all-databases > server_db_backup.sql
 
     # Clear the screen upon completion, and tell the user that it has finished successfully.
 
@@ -167,7 +167,7 @@ dbBackup() {
     # Instead, we're just storing it in their /Documents/ folder, as that is >typically< created upon user account creation.
     # We finalzie this process by tagging the Year, Month, and Day of DB creation so we can select which one to recover from later.
 
-    cd /tmp/ && mysqldump --user=userName --password=passWord --lock-tables --all-databases > $(date '+%Y-%m-%d').sql
+    cd /tmp/ && sudo mysqldump --user=userName --password=passWord --lock-tables --all-databases > $(date '+%Y-%m-%d').sql
 
     # Clear the screen upon completion, and tell the user that it has finished successfully.
 
