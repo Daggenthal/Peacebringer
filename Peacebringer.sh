@@ -1,8 +1,5 @@
 #!/bin/bash
 
-echo
-echo "Please re-run this with -h to see available options; Use CTRL+C to exit."
-
 Help()  {
    
     # Display Help
@@ -19,6 +16,46 @@ Help()  {
     echo
 
 }
+
+mainMenu() {
+
+    clear
+
+    printf      "\n\tWelcome to Peacebringer! Please input your selection: \n"
+    
+    printf      "\n\t1: Full Backup"
+    printf      "\n\t2: Database Backup"
+    printf      "\n\t3: Website / NGINX Backup\n"
+    printf      "\n\t4: Transfer Backup"
+    printf      "\n\t5: Server Setup\n"
+    printf      "\n\t6: Restore Full Backup"
+    printf      "\n\t7: Restore Database"
+    printf      "\n\t8: Restore Website\n"
+    printf      "\n\t9: Exit\n\t"
+
+    read -p     $'\n\t'"Please input your choice: " userChoice
+
+    if      [ $userChoice = '1' ]; then
+        fullBackup
+    elif    [ $userChoice = '2' ]; then
+        dbBackup
+    elif    [ $userChoice = '3' ]; then
+        webBackup
+    elif    [ $userChoice = '4' ]; then
+        transferBackup
+    elif    [ $userChoice = '5' ]; then
+        serverSetup
+    elif    [ $userChoice = '6' ]; then
+        fullRestore
+    elif    [ $userChoice = '7' ]; then
+        dbRestore
+    elif    [ $userChoice = '8' ]; then
+        webRestore
+    elif    [ $userChoice = '9' ]; then
+        clear && exit
+    fi
+}
+
 
 ############################ FUNCTIONS ############################
 
@@ -148,7 +185,7 @@ dbRestore() {
 
     clear
 
-    echo        "Scanning the /tmp/ directory for any databases..."
+    echo        $'\n\t'"Scanning the /tmp/ directory for any databases..."
     echo
     sleep 1
 
@@ -258,7 +295,7 @@ webRestore() {
 
     clear
 
-    echo        "Scanning the /tmp/ directory for any databases..."
+    echo        $'\n\t'"Scanning the /tmp/ directory for any databases..."
     echo
     sleep 1
 
@@ -632,7 +669,7 @@ fullRestore() {
 ############################ FUNCTIONS ############################
 
 
-#	This here allows us to pass Command Line Options so we can skip the main menu itself
+#	This here allows us to pass Command Line Options so we can skip the main menu itself, while also executing the main menu if no options were set
 
 while [ -n "$0" ]; do
 
@@ -666,6 +703,9 @@ while [ -n "$0" ]; do
 				exit;;
 		
 	esac
+
 	shift
+
+    mainMenu
 	
 done
